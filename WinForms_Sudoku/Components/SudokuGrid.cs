@@ -159,8 +159,7 @@ namespace WinForms_Sudoku
         }
 
 
-
-        #region Double-buffered drawing methods
+            #region Double-buffered drawing methods
 
         private void RecreateBuffers()
         {
@@ -766,6 +765,8 @@ namespace WinForms_Sudoku
             _solvableTimerStep = 0;
             SolvableTimer.Interval = 3000;
             SolvableTimer.Enabled = true;
+
+            // TODO: call a method to set font sizes, this same logic is now in two places...
 
             if (isSolvable)
             {
