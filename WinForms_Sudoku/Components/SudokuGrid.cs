@@ -101,16 +101,6 @@ namespace WinForms_Sudoku
         Font SolvedFont = new Font("Tahoma", 32);
         Brush SolvedBrush = new SolidBrush(Color.Blue);
 
-        /// <summary>
-        /// X (column) value of currently selected cell
-        /// </summary>
-        //private int SelectedX { get; set; }
-
-        /// <summary>
-        /// Y (row) value of currently selected cell
-        /// </summary>
-        //private int SelectedY { get; set; }
-
         Coordinate SelectedCell;
 
         /// <summary>
@@ -170,7 +160,7 @@ namespace WinForms_Sudoku
 
 
 
-        #region Double-buffered drawing system methods
+        #region Double-buffered drawing methods
 
         private void RecreateBuffers()
         {
@@ -219,24 +209,7 @@ namespace WinForms_Sudoku
         }
 
 
-        /*
-                protected override void Dispose(bool disposing)
-                {
-                    _isDisposing = true;
-                    if (disposing)
-                    {
-                        if (components != null)
-                            components.Dispose();
-
-                        // We must dispose of backbufferGraphics before we dispose of backbufferContext or we will get an exception.
-                        if (backbufferGraphics != null)
-                            backbufferGraphics.Dispose();
-                        if (backbufferContext != null)
-                            backbufferContext.Dispose();
-                    }
-                    base.Dispose(disposing);
-                }
-        */
+        
         protected override void OnPaint(PaintEventArgs e)
         {
             // If we've initialized the backbuffer properly, render it on the control. 
