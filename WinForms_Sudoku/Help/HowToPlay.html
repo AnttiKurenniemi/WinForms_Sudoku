@@ -1,0 +1,129 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Sudoku - How to play</title>
+    <style media="screen" type="text/css">
+        html
+        {
+            font-family: Arial, Verdana, sans-serif;
+            font-size: smaller;
+        }
+
+        .screenshot
+        {
+            vertical-align: top;
+            float: right;
+        }
+    </style>
+</head>
+<body>
+    <h1>Simple Sudoku - How to play</h1>
+
+    <p><strong><i>Tip 1:</i></strong> You can keep this help page open while you play. Drag the window so that it doesn't
+        cover the game window.</p>
+
+    <p><strong><i>Tip 2:</i></strong> This help is only shown once automatically, when you start the game for the first time.
+        If you wish to see this help later, you can find it from the &quot;File...&quot; menu button on the main game
+        window.</p>
+
+    <h2>Game basics</h2>
+
+    <p><strong><i>Note:</i></strong> This is only a very brief explanation of the game. There are many, many places on
+        the web where you can find out more about Sudoku.</p>
+
+    <p>Sudoku is a puzzle game in which you must place numbers from 1 to 9, in each cell of a 9 x 9 grid. Numbers must be
+        placed so that each vertical and each horizontal row of 9 numbers contains each digit from 1 to 9, exactly once. Also
+        each 3 x 3 cell sub-grid must contain each digit exactly once.</p>
+
+    <p>Some numbers are given to start the game, as seed numbers. You must start deducing other numbers based on the seed
+        numbers. For example, if the first row has numbers 1, 2 and 3 on it in any cell, you know that those numbers can not
+        be placed in any other cell on the first row.</p>
+
+    <p>The game ends - is solved - when all cells have numbers and none of them conflicts with any other number.</p>
+
+    <h2>The game window</h2>
+
+    <img src="./main_window_1.png" alt="Game main window" class="screenshot"/>
+
+    <p>The main window looks like this. It has the game grid on the left, a bunch of function buttons on the right and
+        a status display at the bottom right.</p>
+
+    <p>The game board is where you place numbers. You can move the selection (the blue cell) with the keyboard cursor
+        keys, or by clicking on any cell with the mouse. To place a number, simply press on that number on the
+        keyboard - or, if you have already selected a cell with a number (all other cells with the same number will be
+        shown with the number in blue color, like number 4 in the image), you can place that same number to a cell by
+        double-clicking on where you want to place the number. To delete a number, press the Backspace or Delete key
+        on your keyboard, or press 0 (zero).<br />
+
+        You can place numbers on empty cells and on cells that already have some other number, if that number was placed
+        by you and not given as a seed number. Simply select a cell with an existing (black) number and place a new one
+        on top of it.</p>
+
+    <p>The function buttons on the right are:<br /><br />
+
+        <strong>File...</strong> button opens a file menu where you can save and load games, and open this help page.<br /><br />
+
+        <strong>Set random preset</strong> sets a predefined game layout, randomised so that you should never get the same
+        board again. These are more or less tested layouts that should be somewhat interesting to play.<br /><br />
+
+        <strong>Set random layout</strong> generates a completely random game
+        which may or may not be interesting - it is always possible to solve, but tends to be rather easy.<br /><br />
+
+        <strong>Give a hint</strong> will solve one cell if it is possible for the game engine. The hint cell will have a
+        green font color. You can ask for as many hints as you need, as long as the game can determine a new cell value.<br /><br />
+
+        <strong>Undo move</strong> lets you undo any moves you have made, for as long as you have played the game.<br /><br />
+
+        <strong>Solve all</strong> will use the game engine to solve the whole board. You can use this also to solve any
+        puzzles you find from other sources: just place the initial numbers on an empty board and have the engine solve
+        it. Note that the engine only uses straight forward deduction logic, not brute force, so it won't be able to solve
+        any and all boards out there.<br /><br />
+
+        <strong>Check if solvable</strong> button will attempt to solve the game and display an overlay with the result.
+        You can use this to check the game every now and then, to see if you have placed numbers that make it impossible
+        to solve the game.</p>
+
+    <h2>Status display</h2>
+
+    <p>The status display on the bottom right shows elapsed game time, moves used and cells slved. It also has a grid of
+        numbers showing in a more visual way, how many numbers of each digit have been solved.</p>
+
+    <h2>Colors explained</h2>
+
+    <p>During the game, you will see numbers in different colors and cells with different background colors. These are:<br /><br />
+
+        <strong>Gray numbers</strong> in cells indicate fixed numbers, numbers that came with the original layout. You can't
+        undo or delete those, or place your own numbers on top of them.<br /><br />
+
+        <strong>Black numbers</strong> are numbers placed by you, that are not in conflict with any other numbers in the same
+        row, column or block.<br /><br />
+
+        <strong>Blue numbers</strong> indicate all cells that have the same digit as the cell that is currently selected. It
+        does not mean anything, it is just a visual aid for you when playing.<br /><br />
+
+        <strong>Green numbers</strong> are numbers that have been completely solved. For example in the screenshot shown here,
+        number 1 (one) has been solved - nine cells with number 1 have been placed.<br /><br />
+
+        <strong>Red numbers</strong> indicate an error, a conflict with the same number in another cell on the same row, column
+        or block. All conflicting numbers are shown, so it will be very easy to spot the error. You can then <strong>Undo</strong>
+        your last move, or place another number on top of one of the conflicting numbers, or delete one of the conflicting
+        numbers.<br /><br />
+
+        <strong>Blue background</strong> on a cell indicates the currently selected cell.<br /><br />
+
+        <strong>Green background</strong> indicates a row or column, or a 3x3 block of cells that have been completely solved.</p>
+
+    <h2>Show possible values</h2>
+
+    <p>At the very bottom-right corner of the main window is a checkbox labeled <strong>Show possible values</strong>.
+        Selecting that checkbox makes the game draw all possible values to cells that have not been assigned a number, as
+        small numbers. This can be used to give you a hint in a difficult situation, or to gain an understanding of how
+        the game sees the board.</p>
+
+    <h2>The end</h2>
+
+    <p>That's it, no more blah blah - go play the game!</p>
+</body>
+</html>
