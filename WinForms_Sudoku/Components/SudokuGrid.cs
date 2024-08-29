@@ -12,7 +12,7 @@ namespace WinForms_Sudoku
         /// <summary>
         /// Status display control; a reference is needed here to be able to update it.
         /// </summary>
-        private StatusDisplay _GridStatusDisplay = null;
+        private StatusDisplay _GridStatusDisplay;
         [Description("Status display, if assigned, shows the number of solved and remaining numbers of a board"), Category("Data")]
         public StatusDisplay GridStatusDisplay
         {
@@ -57,29 +57,29 @@ namespace WinForms_Sudoku
         private readonly Brush _solvedLineBackgroundBrush = new SolidBrush(Color.FromArgb(220, 255, 220));
 
 
-        Pen borderPen_Light = new Pen(Color.LightGray, 1);
-        Pen borderPen_Dark = new Pen(Color.DarkGray, 1);
-        Pen GridLinePen = new Pen(Color.LightGray, 1);
-        Pen GridLineDarkPen = new Pen(Color.Black, 1);
+        private readonly Pen borderPen_Light = new Pen(Color.LightGray, 1);
+        private readonly Pen borderPen_Dark = new Pen(Color.DarkGray, 1);
+        private readonly Pen GridLinePen = new Pen(Color.LightGray, 1);
+        private readonly Pen GridLineDarkPen = new Pen(Color.Black, 1);
 
         Font NumberFont = new Font("Tahoma", 10);
-        StringFormat NumberFormat = new StringFormat();
+        private readonly StringFormat NumberFormat = new StringFormat();
 
         // Colors for drawing numbers in different colors:
-        Brush _numberBrush = new SolidBrush(Color.Black);
-        Brush _errorNumberBrush = new SolidBrush(Color.Red);
-        Brush _fixedNumberBrush = new SolidBrush(Color.DimGray);
-        Brush _solvedNumberBrush = new SolidBrush(Color.DarkGreen);
-        Brush _sameAsSelectedBrush = new SolidBrush(Color.Blue);
-        Brush _hintCellBrush = new SolidBrush(Color.Green);
-        Brush _selectedCellBrush = new SolidBrush(Color.LightSkyBlue);
+        private readonly Brush _numberBrush = new SolidBrush(Color.Black);
+        private readonly Brush _errorNumberBrush = new SolidBrush(Color.Red);
+        private readonly Brush _fixedNumberBrush = new SolidBrush(Color.DimGray);
+        private readonly Brush _solvedNumberBrush = new SolidBrush(Color.DarkGreen);
+        private readonly Brush _sameAsSelectedBrush = new SolidBrush(Color.Blue);
+        private readonly Brush _hintCellBrush = new SolidBrush(Color.Green);
+        private readonly Brush _selectedCellBrush = new SolidBrush(Color.LightSkyBlue);
 
         /// <summary>This font is used to show which numbers are still possible</summary>
-        Font PossibleValueFont = new Font("Tahoma", 8);
+        private Font PossibleValueFont = new Font("Tahoma", 8);
         public bool ShowPossibleValues = false;
 
         // Following variables are used by the double-buffered drawing:
-        private readonly bool _initializationComplete;
+        private bool InitializationComplete;
         private bool _isDisposing;
         private BufferedGraphicsContext backbufferContext;
         private BufferedGraphics backbufferGraphics;
@@ -89,19 +89,19 @@ namespace WinForms_Sudoku
         private GameData Board = new GameData();
 
         // Fading "solvable" text related variables:
-        Font SolvableFont = new Font("Tahoma", 32);
-        Brush SolvableFontBrush = new SolidBrush(Color.Blue);
+        private Font SolvableFont = new Font("Tahoma", 32);
+        private Brush SolvableFontBrush = new SolidBrush(Color.Blue);
         string SolvableText = "";
-        System.Windows.Forms.Timer SolvableTimer = new System.Windows.Forms.Timer();
+        private System.Windows.Forms.Timer SolvableTimer = new System.Windows.Forms.Timer();
 
         /// <summary>This value is used to perform a fade-out of the solvable/not sovlable text</summary>
         private int _solvableTimerStep;
 
         // "Solved" text across the grid after whole grid has been solved
         Font SolvedFont = new Font("Tahoma", 32);
-        Brush SolvedBrush = new SolidBrush(Color.Blue);
+        private readonly Brush SolvedBrush = new SolidBrush(Color.Blue);
 
-        Coordinate SelectedCell;
+        private Coordinate SelectedCell;
 
         /// <summary>
         /// Last selected value which does NOT get updated if a 0-value cell is selected. This is
@@ -136,7 +136,7 @@ namespace WinForms_Sudoku
 
             // Assign our buffer context.
             backbufferContext = BufferedGraphicsManager.Current;
-            _initializationComplete = true;
+            InitializationComplete = true;
 
             RecreateBuffers();
 
@@ -165,7 +165,7 @@ namespace WinForms_Sudoku
         {
             // Check initialization has completed so we know backbufferContext has been assigned.
             // Check that we aren't disposing or this could be invalid.
-            if (!_initializationComplete || _isDisposing)
+            if (!InitializationComplete || _isDisposing)
                 return;
 
             // We recreate the buffer with a width and height of the control. The "+ 1" 
