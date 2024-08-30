@@ -15,10 +15,10 @@ namespace WinForms_Sudoku
         public SudokuGrid? OwnerGrid { get; set; }
 
         // Following variables are used by the double-buffered drawing:
-        private bool initializationComplete;
-        private BufferedGraphicsContext? backbufferContext;
-        private BufferedGraphics? backbufferGraphics;
-        private Graphics? drawingGraphics;
+        private bool InitializationComplete;
+        private BufferedGraphicsContext? BackbufferContext;
+        private BufferedGraphics? BackbufferGraphics;
+        private Graphics? DrawingGraphics;
 
         /// <summary>
         /// The status display is updated on a timer, mainly for the game time label to update all the time
@@ -28,28 +28,29 @@ namespace WinForms_Sudoku
         /// <summary>
         /// Border pen for light color; light and dark color used to make the main game board seem slightly 3D-ish.
         /// </summary>
-        Pen BorderPen_Light = new Pen(Color.LightGray, 1);
+        private readonly Pen BorderPen_Light = new Pen(Color.LightGray, 1);
+        
         /// <summary>
         /// Border pen for dark color; light and dark color used to make the main game board seem slightly 3D-ish.
         /// </summary>
-        Pen BorderPen_Dark = new Pen(Color.DarkGray, 1);
+        private readonly Pen BorderPen_Dark = new Pen(Color.DarkGray, 1);
 
-        Font NumberFont = new Font("Tahoma", 9);
-        Font SelectedNumberFont = new Font("Tahoma", 9, FontStyle.Bold);
-        Font SolvedNumberFont = new Font("Tahoma", 9);
-        Font SelectedSolvedNumberFont = new Font("Tahoma", 9, FontStyle.Bold);
-        Brush NumberFontBrush = new SolidBrush(Color.DarkRed);
-        Brush SolvedNumberFontBrush = new SolidBrush(Color.DarkGreen);
+        private readonly Font NumberFont = new Font("Tahoma", 9);
+        private readonly Font SelectedNumberFont = new Font("Tahoma", 9, FontStyle.Bold);
+        private readonly Font SolvedNumberFont = new Font("Tahoma", 9);
+        private readonly Font SelectedSolvedNumberFont = new Font("Tahoma", 9, FontStyle.Bold);
+        private readonly Brush NumberFontBrush = new SolidBrush(Color.DarkRed);
+        private readonly Brush SolvedNumberFontBrush = new SolidBrush(Color.DarkGreen);
 
         /// <summary>
         /// Highlight the selected number (full row) in the display by setting background color to similar to selected cell
         /// </summary>
-        Brush SelectedNumberBackgroundBrush = new SolidBrush(Color.FromArgb(200, 225, 255));
+        private readonly Brush SelectedNumberBackgroundBrush = new SolidBrush(Color.FromArgb(200, 225, 255));
 
-        StringFormat NumberFormat = new StringFormat();
-        Brush TotalBrush = new SolidBrush(Color.Black);
+        private readonly StringFormat NumberFormat = new StringFormat();
+        private readonly Brush TotalBrush = new SolidBrush(Color.Black);
 
-        //private int TopPadding { get { return 80; } }
+        /// <summary>The space between the "numbers" area and the labels at the top</summary>
         private int TopPadding;
 
         #endregion
@@ -67,8 +68,8 @@ namespace WinForms_Sudoku
             this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
 
             // Assign our buffer context.
-            backbufferContext = BufferedGraphicsManager.Current;
-            initializationComplete = true;
+            BackbufferContext = BufferedGraphicsManager.Current;
+            InitializationComplete = true;
 
             RecreateBuffers();
 
@@ -111,30 +112,27 @@ namespace WinForms_Sudoku
         {
             // Check initialization has completed so we know backbufferContext has been assigned.
             // Check that we aren't disposing or this could be invalid.
-            if (!initializationComplete)
-                return;
-
-            if (backbufferContext == null)
+            if (!InitializationComplete || BackbufferContext == null)
                 return;
 
             // We recreate the buffer with a width and height of the control. The "+ 1" 
             // guarantees we never have a buffer with a width or height of 0. 
-            backbufferContext.MaximumBuffer = new Size(this.Width + 1, this.Height + 1);
+            BackbufferContext.MaximumBuffer = new Size(this.Width + 1, this.Height + 1);
 
             // Dispose of old backbufferGraphics (if one has been created already)
-            if (backbufferGraphics != null)
-                backbufferGraphics.Dispose();
+            if (BackbufferGraphics != null)
+                BackbufferGraphics.Dispose();
 
             // Create new backbufferGrpahics that matches the current size of buffer.
-            backbufferGraphics = backbufferContext.Allocate(this.CreateGraphics(),
+            BackbufferGraphics = BackbufferContext.Allocate(this.CreateGraphics(),
                 new Rectangle(0, 0, Math.Max(this.Width, 1), Math.Max(this.Height, 1)));
 
             // Assign the Graphics object on backbufferGraphics to "drawingGraphics" for easy reference elsewhere.
-            drawingGraphics = backbufferGraphics.Graphics;
+            DrawingGraphics = BackbufferGraphics.Graphics;
             //drawingGraphics.TextRenderingHint = TextRenderingHint.AntiAlias;
 
             // This is a good place to assign drawingGraphics.SmoothingMode if you want a better anti-aliasing technique.
-            drawingGraphics.SmoothingMode = SmoothingMode.AntiAlias;
+            DrawingGraphics.SmoothingMode = SmoothingMode.AntiAlias;
 
             // Invalidate the control so a repaint gets called somewhere down the line.
             this.Invalidate();
@@ -158,8 +156,8 @@ namespace WinForms_Sudoku
         {
             // If we've initialized the backbuffer properly, render it on the control. 
             // Otherwise, do just the standard control paint.
-            if (backbufferGraphics != null)
-                backbufferGraphics.Render(e.Graphics);
+            if (BackbufferGraphics != null)
+                BackbufferGraphics.Render(e.Graphics);
         }
         #endregion
 
@@ -168,27 +166,23 @@ namespace WinForms_Sudoku
         /// </summary>
         public void Redraw()
         {
-            if (drawingGraphics == null)
+            if (DrawingGraphics == null || Disposing || OwnerGrid == null)
                 return;
-            if (Disposing)
-                return;
-            if (OwnerGrid == null)
-                return;  // Nothing to draw
 
             // Clear the background
-            drawingGraphics.Clear(BackColor);
+            DrawingGraphics.Clear(BackColor);
 
             TopPadding = lbSolved.Top + lbSolved.Height;
 
             // Draw bottom half in white, and borders around it
             Rectangle BackGround = new Rectangle(0, TopPadding, Width, Height - TopPadding);
-            drawingGraphics.FillRectangle(Brushes.White, BackGround);
+            DrawingGraphics.FillRectangle(Brushes.White, BackGround);
 
             // Borders:
-            drawingGraphics.DrawLine(BorderPen_Dark, 0, TopPadding, Width - 1, TopPadding);            // Top left - top right
-            drawingGraphics.DrawLine(BorderPen_Light, Width - 1, TopPadding, Width - 1, Height - 1);   // top right - bottom right
-            drawingGraphics.DrawLine(BorderPen_Dark, 0, Height - 1, 0, TopPadding);                    // bottom left - top left
-            drawingGraphics.DrawLine(BorderPen_Light, 0, Height - 1, Width - 1, Height - 1);           // bottom left - bottom right
+            DrawingGraphics.DrawLine(BorderPen_Dark, 0, TopPadding, Width - 1, TopPadding);            // Top left - top right
+            DrawingGraphics.DrawLine(BorderPen_Light, Width - 1, TopPadding, Width - 1, Height - 1);   // top right - bottom right
+            DrawingGraphics.DrawLine(BorderPen_Dark, 0, Height - 1, 0, TopPadding);                    // bottom left - top left
+            DrawingGraphics.DrawLine(BorderPen_Light, 0, Height - 1, Width - 1, Height - 1);           // bottom left - bottom right
 
             DrawValues(OwnerGrid.GetSolvedValues());
 
@@ -244,18 +238,18 @@ namespace WinForms_Sudoku
         /// <param name="Cell"></param>
         private void DrawSingleNumberSolved(int Number, int SolvedCount, Rectangle Cell)
         {
-            if (OwnerGrid == null || drawingGraphics == null)
+            if (OwnerGrid == null || DrawingGraphics == null)
                 return;
                 
             
             // Draw the number at the left of the row:
             if (OwnerGrid.LastSelectedValue == Number)
             {
-                drawingGraphics.FillRectangle(SelectedNumberBackgroundBrush, Cell);
-                drawingGraphics.DrawString(Number.ToString() + " :", SelectedNumberFont, TotalBrush, 4, Cell.Top);
+                DrawingGraphics.FillRectangle(SelectedNumberBackgroundBrush, Cell);
+                DrawingGraphics.DrawString(Number.ToString() + " :", SelectedNumberFont, TotalBrush, 4, Cell.Top);
             }
             else
-                drawingGraphics.DrawString(Number.ToString() + " :", NumberFont, TotalBrush, 4, Cell.Top);
+                DrawingGraphics.DrawString(Number.ToString() + " :", NumberFont, TotalBrush, 4, Cell.Top);
 
             // Then a mark for each solved or not solved cell
             for (int i = 1; i < 10; i++)
@@ -266,17 +260,17 @@ namespace WinForms_Sudoku
                 {
                     // Unsolved number - draw a red question mark
                     if (OwnerGrid.LastSelectedValue == Number)
-                        drawingGraphics.DrawString("?", SelectedNumberFont, NumberFontBrush, left, Cell.Top);
+                        DrawingGraphics.DrawString("?", SelectedNumberFont, NumberFontBrush, left, Cell.Top);
                     else
-                        drawingGraphics.DrawString("?", NumberFont, NumberFontBrush, left, Cell.Top);
+                        DrawingGraphics.DrawString("?", NumberFont, NumberFontBrush, left, Cell.Top);
                 }
                 else
                 {
                     // Solved number - draw a green, X 
                     if (OwnerGrid.LastSelectedValue == Number)
-                        drawingGraphics.DrawString("X", SelectedSolvedNumberFont, SolvedNumberFontBrush, left, Cell.Top);
+                        DrawingGraphics.DrawString("X", SelectedSolvedNumberFont, SolvedNumberFontBrush, left, Cell.Top);
                     else
-                        drawingGraphics.DrawString("X", SolvedNumberFont, SolvedNumberFontBrush, left, Cell.Top);
+                        DrawingGraphics.DrawString("X", SolvedNumberFont, SolvedNumberFontBrush, left, Cell.Top);
                 }
             }
         }
