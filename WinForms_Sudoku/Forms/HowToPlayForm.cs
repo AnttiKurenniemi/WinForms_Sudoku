@@ -24,8 +24,12 @@ namespace WinForms_Sudoku
 
         private void HowToPlayForm_Shown(object sender, EventArgs e)
         {
-            string HelpFilePath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "Help\\HowToPlay.html");
-            browser.Navigate(@"file://" + HelpFilePath);
+            string? ExecutablePath = Path.GetDirectoryName(Application.ExecutablePath);
+            if (!string.IsNullOrEmpty(ExecutablePath))
+            {
+                string HelpFilePath = Path.Combine(ExecutablePath, "Help\\HowToPlay.html");
+                browser.Navigate(@"file://" + HelpFilePath);
+            }
         }
     }
 }

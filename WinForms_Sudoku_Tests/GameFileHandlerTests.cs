@@ -9,6 +9,13 @@ namespace WinForms_Sudoku.Tests
     [TestClass()]
     public class GameFileHandlerTests
     {
+        // Several compiler warnings suppressed on purpose, because I specifically want to do stupid
+        // stuff in tests, with NULLs especially:
+
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning disable CS8604 // Possible null reference argument.
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+
         [TestMethod()]
         public void FileIsValid_returns_false_if_string_array_is_null()
         {
@@ -127,5 +134,8 @@ namespace WinForms_Sudoku.Tests
             GameFileHandler fileHandler = new GameFileHandler();
             Assert.AreEqual(false, fileHandler.LoadFromFile(null, "T:\\this\\path\\hopefully\\does\\not\\exist.xyz"));
         }
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+#pragma warning restore CS8604 // Possible null reference argument.
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
     }
 }

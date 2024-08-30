@@ -12,8 +12,8 @@ namespace WinForms_Sudoku
         /// <summary>
         /// Status display control; a reference is needed here to be able to update it.
         /// </summary>
-        private StatusDisplay _GridStatusDisplay;
-        [Description("Status display, if assigned, shows the number of solved and remaining numbers of a board"), Category("Data")]
+        private StatusDisplay _GridStatusDisplay = null!;
+        
         public StatusDisplay GridStatusDisplay
         {
             get
@@ -23,7 +23,7 @@ namespace WinForms_Sudoku
             set
             {
                 _GridStatusDisplay = value;
-                if (value != null)
+                if (value != null && _GridStatusDisplay.OwnerGrid != null)
                 {
                     // Give the grid status display this as parameter:
                     _GridStatusDisplay.OwnerGrid = this;
@@ -50,29 +50,39 @@ namespace WinForms_Sudoku
 
         public DateTime StartTime = DateTime.Now;
 
+        #region Fonts, brushes and colors
         // Colors:
-        private readonly Brush _backgroundBrush = new SolidBrush(Color.White);
-        private readonly Brush _grayBackgroundBrush = new SolidBrush(Color.FromArgb(250, 250, 250));
-        private readonly Brush _solvedBackgroundBrush = new SolidBrush(Color.LightGreen);
-        private readonly Brush _solvedLineBackgroundBrush = new SolidBrush(Color.FromArgb(220, 255, 220));
+        private readonly Brush BackgroundBrush = new SolidBrush(Color.White);
+        private readonly Brush GrayBackgroundBrush = new SolidBrush(Color.FromArgb(250, 250, 250));
+        private readonly Brush SolvedBackgroundBrush = new SolidBrush(Color.LightGreen);
+        private readonly Brush SolvedLineBackgroundBrush = new SolidBrush(Color.FromArgb(220, 255, 220));
 
-
-        private readonly Pen borderPen_Light = new Pen(Color.LightGray, 1);
-        private readonly Pen borderPen_Dark = new Pen(Color.DarkGray, 1);
+        private readonly Pen BorderPen_Light = new Pen(Color.LightGray, 1);
+        private readonly Pen BorderPen_Dark = new Pen(Color.DarkGray, 1);
         private readonly Pen GridLinePen = new Pen(Color.LightGray, 1);
         private readonly Pen GridLineDarkPen = new Pen(Color.Black, 1);
 
-        Font NumberFont = new Font("Tahoma", 10);
+        private Font NumberFont = new Font("Tahoma", 10);
         private readonly StringFormat NumberFormat = new StringFormat();
 
         // Colors for drawing numbers in different colors:
-        private readonly Brush _numberBrush = new SolidBrush(Color.Black);
-        private readonly Brush _errorNumberBrush = new SolidBrush(Color.Red);
-        private readonly Brush _fixedNumberBrush = new SolidBrush(Color.DimGray);
-        private readonly Brush _solvedNumberBrush = new SolidBrush(Color.DarkGreen);
-        private readonly Brush _sameAsSelectedBrush = new SolidBrush(Color.Blue);
-        private readonly Brush _hintCellBrush = new SolidBrush(Color.Green);
-        private readonly Brush _selectedCellBrush = new SolidBrush(Color.LightSkyBlue);
+        private readonly Brush NumberBrush = new SolidBrush(Color.Black);
+        private readonly Brush ErrorNumberBrush = new SolidBrush(Color.Red);
+        private readonly Brush FixedNumberBrush = new SolidBrush(Color.DimGray);
+        private readonly Brush SolvedNumberBrush = new SolidBrush(Color.DarkGreen);
+        private readonly Brush SameAsSelectedBrush = new SolidBrush(Color.Blue);
+        private readonly Brush HintCellBrush = new SolidBrush(Color.Green);
+        private readonly Brush SelectedCellBrush = new SolidBrush(Color.LightSkyBlue);
+
+        // Fading "solvable" text related variables:
+        private Font SolvableFont = new Font("Tahoma", 32);
+        private Brush SolvableFontBrush = new SolidBrush(Color.Blue);
+        
+        // "Solved" text across the grid after whole grid has been solved
+        private Font SolvedFont = new Font("Tahoma", 32);
+        private readonly Brush SolvedBrush = new SolidBrush(Color.Blue);
+
+        #endregion
 
         /// <summary>This font is used to show which numbers are still possible</summary>
         private Font PossibleValueFont = new Font("Tahoma", 8);
@@ -80,26 +90,18 @@ namespace WinForms_Sudoku
 
         // Following variables are used by the double-buffered drawing:
         private bool InitializationComplete;
-        private bool _isDisposing;
-        private BufferedGraphicsContext backbufferContext;
-        private BufferedGraphics backbufferGraphics;
-        private Graphics drawingGraphics;
+        private BufferedGraphicsContext BackbufferContext;
+        private BufferedGraphics BackbufferGraphics = null!;
+        private Graphics DrawingGraphics = null!;
 
         private SolvedValuesData SolvedValues = new SolvedValuesData();
         private GameData Board = new GameData();
 
-        // Fading "solvable" text related variables:
-        private Font SolvableFont = new Font("Tahoma", 32);
-        private Brush SolvableFontBrush = new SolidBrush(Color.Blue);
-        string SolvableText = "";
+        private string SolvableText = "";
         private System.Windows.Forms.Timer SolvableTimer = new System.Windows.Forms.Timer();
 
         /// <summary>This value is used to perform a fade-out of the solvable/not sovlable text</summary>
-        private int _solvableTimerStep;
-
-        // "Solved" text across the grid after whole grid has been solved
-        Font SolvedFont = new Font("Tahoma", 32);
-        private readonly Brush SolvedBrush = new SolidBrush(Color.Blue);
+        private int SolvableTimerStep;
 
         private Coordinate SelectedCell;
 
@@ -135,7 +137,7 @@ namespace WinForms_Sudoku
             this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
 
             // Assign our buffer context.
-            backbufferContext = BufferedGraphicsManager.Current;
+            BackbufferContext = BufferedGraphicsManager.Current;
             InitializationComplete = true;
 
             RecreateBuffers();
@@ -165,27 +167,27 @@ namespace WinForms_Sudoku
         {
             // Check initialization has completed so we know backbufferContext has been assigned.
             // Check that we aren't disposing or this could be invalid.
-            if (!InitializationComplete || _isDisposing)
+            if (!InitializationComplete)
                 return;
 
             // We recreate the buffer with a width and height of the control. The "+ 1" 
             // guarantees we never have a buffer with a width or height of 0. 
-            backbufferContext.MaximumBuffer = new Size(this.Width + 1, this.Height + 1);
+            BackbufferContext.MaximumBuffer = new Size(this.Width + 1, this.Height + 1);
 
             // Dispose of old backbufferGraphics (if one has been created already)
-            if (backbufferGraphics != null)
-                backbufferGraphics.Dispose();
+            if (BackbufferGraphics != null)
+                BackbufferGraphics.Dispose();
 
             // Create new backbufferGrpahics that matches the current size of buffer.
-            backbufferGraphics = backbufferContext.Allocate(this.CreateGraphics(),
+            BackbufferGraphics = BackbufferContext.Allocate(this.CreateGraphics(),
                 new Rectangle(0, 0, Math.Max(this.Width, 1), Math.Max(this.Height, 1)));
 
             // Assign the Graphics object on backbufferGraphics to "drawingGraphics" for easy reference elsewhere.
-            drawingGraphics = backbufferGraphics.Graphics;
-            drawingGraphics.TextRenderingHint = TextRenderingHint.AntiAlias;
+            DrawingGraphics = BackbufferGraphics.Graphics;
+            DrawingGraphics.TextRenderingHint = TextRenderingHint.AntiAlias;
 
             // This is a good place to assign drawingGraphics.SmoothingMode if you want a better anti-aliasing technique.
-            drawingGraphics.SmoothingMode = SmoothingMode.AntiAlias;
+            DrawingGraphics.SmoothingMode = SmoothingMode.AntiAlias;
 
             // Invalidate the control so a repaint gets called somewhere down the line.
             this.Invalidate();
@@ -213,8 +215,8 @@ namespace WinForms_Sudoku
         {
             // If we've initialized the backbuffer properly, render it on the control. 
             // Otherwise, do just the standard control paint.
-            if (!_isDisposing && backbufferGraphics != null)
-                backbufferGraphics.Render(e.Graphics);
+            if (BackbufferGraphics != null)
+                BackbufferGraphics.Render(e.Graphics);
         }
         #endregion
 
@@ -249,10 +251,7 @@ namespace WinForms_Sudoku
                 newFontSize = Width / 10.0F;
                 SolvedFont = new Font("Tahoma", newFontSize, FontStyle.Bold);
 
-                if (SolvableText == "SOLVABLE")
-                    SolvableFont = new Font("Tahoma", Width / 12, FontStyle.Bold);
-                else if (SolvableText == "Not solvable")
-                    SolvableFont = new Font("Tahoma", Width / 15, FontStyle.Bold);
+                SolvableFont = new Font("Tahoma", Width / 12, FontStyle.Bold);
             }
         }
 
@@ -263,29 +262,29 @@ namespace WinForms_Sudoku
         /// </summary>
         public void Redraw()
         {
-            if (drawingGraphics == null)
+            if (DrawingGraphics == null)
                 return;
-            if ((Disposing) || (_isDisposing))
+            if (Disposing)
                 return;
 
-            drawingGraphics.Clear(SystemColors.Control);
+            DrawingGraphics.Clear(SystemColors.Control);
 
             // Clear the background
             if (Board.Solved)
-                drawingGraphics.FillRectangle(_solvedBackgroundBrush, Dimensions.BackgroundRectangle);
+                DrawingGraphics.FillRectangle(SolvedBackgroundBrush, Dimensions.BackgroundRectangle);
             else
             {
-                drawingGraphics.FillRectangle(_backgroundBrush, Dimensions.BackgroundRectangle);
+                DrawingGraphics.FillRectangle(BackgroundBrush, Dimensions.BackgroundRectangle);
 
                 // Draw the slightly gray 3x3 blocks
                 DrawBackgroundBlocks();
             }
 
             // Borders:
-            drawingGraphics.DrawLine(borderPen_Dark, 0, 0, Dimensions.GridWidth, 0);                                           // Top left - top right
-            drawingGraphics.DrawLine(borderPen_Light, Dimensions.GridWidth, 0, Dimensions.GridWidth, Dimensions.GridHeight);   // top right - bottom right
-            drawingGraphics.DrawLine(borderPen_Dark, 0, Dimensions.GridHeight, 0, 0);                                          // bottom left - top left
-            drawingGraphics.DrawLine(borderPen_Light, 0, Dimensions.GridHeight, Dimensions.GridWidth, Dimensions.GridHeight);  // bottom left - bottom right
+            DrawingGraphics.DrawLine(BorderPen_Dark, 0, 0, Dimensions.GridWidth, 0);                                           // Top left - top right
+            DrawingGraphics.DrawLine(BorderPen_Light, Dimensions.GridWidth, 0, Dimensions.GridWidth, Dimensions.GridHeight);   // top right - bottom right
+            DrawingGraphics.DrawLine(BorderPen_Dark, 0, Dimensions.GridHeight, 0, 0);                                          // bottom left - top left
+            DrawingGraphics.DrawLine(BorderPen_Light, 0, Dimensions.GridHeight, Dimensions.GridWidth, Dimensions.GridHeight);  // bottom left - bottom right
 
             SolvedValues.Refresh(Board);
 
@@ -313,16 +312,16 @@ namespace WinForms_Sudoku
         private void DrawBackgroundBlocks()
         {
             // Top row:
-            drawingGraphics.FillRectangle(_grayBackgroundBrush, Dimensions.TopBlock);
+            DrawingGraphics.FillRectangle(GrayBackgroundBrush, Dimensions.TopBlock);
 
             // Center left
-            drawingGraphics.FillRectangle(_grayBackgroundBrush, Dimensions.LeftBlock);
+            DrawingGraphics.FillRectangle(GrayBackgroundBrush, Dimensions.LeftBlock);
 
             // Center right:
-            drawingGraphics.FillRectangle(_grayBackgroundBrush, Dimensions.RightBlock);
+            DrawingGraphics.FillRectangle(GrayBackgroundBrush, Dimensions.RightBlock);
 
             // Center bottom:
-            drawingGraphics.FillRectangle(_grayBackgroundBrush, Dimensions.BottomBlock);
+            DrawingGraphics.FillRectangle(GrayBackgroundBrush, Dimensions.BottomBlock);
         }
 
         /// <summary>
@@ -334,18 +333,18 @@ namespace WinForms_Sudoku
             {
                 float lineX = (Dimensions.GridWidth / 9) * x;
                 if (x % 3 == 0)
-                    drawingGraphics.DrawLine(GridLineDarkPen, lineX, 1, lineX, Dimensions.GridHeight - 1);
+                    DrawingGraphics.DrawLine(GridLineDarkPen, lineX, 1, lineX, Dimensions.GridHeight - 1);
                 else
-                    drawingGraphics.DrawLine(GridLinePen, lineX, 1, lineX, Dimensions.GridHeight - 1);
+                    DrawingGraphics.DrawLine(GridLinePen, lineX, 1, lineX, Dimensions.GridHeight - 1);
             }
 
             for (int y = 1; y < 9; y++)
             {
                 float lineY = (Dimensions.GridHeight / 9) * y;
                 if (y % 3 == 0)
-                    drawingGraphics.DrawLine(GridLineDarkPen, 1, lineY, Dimensions.GridWidth - 1, lineY);
+                    DrawingGraphics.DrawLine(GridLineDarkPen, 1, lineY, Dimensions.GridWidth - 1, lineY);
                 else
-                    drawingGraphics.DrawLine(GridLinePen, 1, lineY, Dimensions.GridWidth - 1, lineY);
+                    DrawingGraphics.DrawLine(GridLinePen, 1, lineY, Dimensions.GridWidth - 1, lineY);
             }
         }
 
@@ -362,7 +361,7 @@ namespace WinForms_Sudoku
                 return;
 
             RectangleF rct = GetCellRectangle(SelectedCell.X, SelectedCell.Y);
-            drawingGraphics.FillRectangle(_selectedCellBrush, rct);
+            DrawingGraphics.FillRectangle(SelectedCellBrush, rct);
         }
 
 
@@ -385,7 +384,7 @@ namespace WinForms_Sudoku
                             // but not if this is the currently selected cell, to not override the blue
                             // color:
                             if (x != SelectedCell.X || y != SelectedCell.Y)
-                                drawingGraphics.FillRectangle(_solvedLineBackgroundBrush, rct);
+                                DrawingGraphics.FillRectangle(SolvedLineBackgroundBrush, rct);
                         }
                     }
                 }
@@ -410,27 +409,27 @@ namespace WinForms_Sudoku
                         {
                             // Highlight errors in red
                             if (Board.Data[x, y].Error)
-                                drawingGraphics.DrawString(Board.Data[x, y].Value.ToString(), NumberFont, _errorNumberBrush, rct, NumberFormat);
+                                DrawingGraphics.DrawString(Board.Data[x, y].Value.ToString(), NumberFont, ErrorNumberBrush, rct, NumberFormat);
 
                             // If a number is completely solved, draw it in gray to indicate there's no mor eneed to bother with that number
                             else if (SolvedValues.SolvedCounts[Board.Data[x, y].Value] == 9)
-                                drawingGraphics.DrawString(Board.Data[x, y].Value.ToString(), NumberFont, _solvedNumberBrush, rct, NumberFormat);
+                                DrawingGraphics.DrawString(Board.Data[x, y].Value.ToString(), NumberFont, SolvedNumberBrush, rct, NumberFormat);
 
                             // Highlight cells with the same value as the current one, in blue
                             else if ((Board.Data[x, y].Value == CurrentlySelectedValue) && (!Board.Solved))
-                                drawingGraphics.DrawString(Board.Data[x, y].Value.ToString(), NumberFont, _sameAsSelectedBrush, rct, NumberFormat);
+                                DrawingGraphics.DrawString(Board.Data[x, y].Value.ToString(), NumberFont, SameAsSelectedBrush, rct, NumberFormat);
 
                             // Highlight last given hint in green:
                             else if ((Board.Data[x, y].HintCell == true) && (!Board.Solved))
-                                drawingGraphics.DrawString(Board.Data[x, y].Value.ToString(), NumberFont, _hintCellBrush, rct, NumberFormat);
+                                DrawingGraphics.DrawString(Board.Data[x, y].Value.ToString(), NumberFont, HintCellBrush, rct, NumberFormat);
 
                             // Fixed cells, i.e. ones set by the engine as preset
                             else if ((Board.Data[x, y].Fixed == true) && (!Board.Solved))
-                                drawingGraphics.DrawString(Board.Data[x, y].Value.ToString(), NumberFont, _fixedNumberBrush, rct, NumberFormat);
+                                DrawingGraphics.DrawString(Board.Data[x, y].Value.ToString(), NumberFont, FixedNumberBrush, rct, NumberFormat);
 
                             // Draw numbers normally, black
                             else
-                                drawingGraphics.DrawString(Board.Data[x, y].Value.ToString(), NumberFont, _numberBrush, rct, NumberFormat);
+                                DrawingGraphics.DrawString(Board.Data[x, y].Value.ToString(), NumberFont, NumberBrush, rct, NumberFormat);
                         }
                         if (ShowPossibleValues)
                             DrawPossibleValues(x, y, rct);
@@ -463,7 +462,7 @@ namespace WinForms_Sudoku
             if (SolvableText == "")
                 return;
 
-            drawingGraphics.DrawString(SolvableText, SolvableFont, SolvableFontBrush, this.ClientRectangle, NumberFormat);
+            DrawingGraphics.DrawString(SolvableText, SolvableFont, SolvableFontBrush, this.ClientRectangle, NumberFormat);
         }
 
 
@@ -473,7 +472,7 @@ namespace WinForms_Sudoku
         private void DrawSolvedText()
         {
             if (Solved())
-                drawingGraphics.DrawString("SOLVED", SolvedFont, SolvedBrush, this.ClientRectangle, NumberFormat);
+                DrawingGraphics.DrawString("SOLVED", SolvedFont, SolvedBrush, this.ClientRectangle, NumberFormat);
         }
 
 
@@ -499,7 +498,7 @@ namespace WinForms_Sudoku
                         (pieceY * Dimensions.HintBlockHeight) + rct.Top,
                         Dimensions.HintBlockWidth,
                         Dimensions.HintBlockHeight);
-                    drawingGraphics.DrawString(i.ToString(), PossibleValueFont, _numberBrush, pieceRectangle, NumberFormat);
+                    DrawingGraphics.DrawString(i.ToString(), PossibleValueFont, NumberBrush, pieceRectangle, NumberFormat);
                 }
 
                 // Advance x and y as needed:
@@ -762,26 +761,22 @@ namespace WinForms_Sudoku
         /// </summary>
         private void SetSolvableStatus(bool isSolvable)
         {
-            _solvableTimerStep = 0;
+            SolvableTimerStep = 0;
             SolvableTimer.Interval = 3000;
             SolvableTimer.Enabled = true;
-
-            // TODO: call a method to set font sizes, this same logic is now in two places...
 
             if (isSolvable)
             {
                 SolvableText = "SOLVABLE";
                 SolvableFontBrush = new SolidBrush(Color.LightGreen);
-                if (Width > 0)
-                    SolvableFont = new Font("Tahoma", Width / 12, FontStyle.Bold);
             }
             else
             {
                 SolvableText = "Not solvable";
                 SolvableFontBrush = new SolidBrush(Color.Salmon);
-                if (Width > 0)
-                    SolvableFont = new Font("Tahoma", Width / 15, FontStyle.Bold);
             }
+            if (Width > 0)
+                SolvableFont = new Font("Tahoma", Width / 12, FontStyle.Bold);
 
             Redraw();
         }
@@ -810,17 +805,17 @@ namespace WinForms_Sudoku
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void SolvableTimer_Tick(object sender, EventArgs e)
+        private void SolvableTimer_Tick(object? sender, EventArgs e)
         {
             // Stop timer, disable the text and redraw
-            _solvableTimerStep++;
-            if (_solvableTimerStep > 8)
+            SolvableTimerStep++;
+            if (SolvableTimerStep > 8)
             {
                 // 10 steps should be enough
                 SolvableTimer.Stop();
                 SolvableText = "";
             }
-            else if (_solvableTimerStep == 1)
+            else if (SolvableTimerStep == 1)
             {
                 SolvableTimer.Stop();
                 SolvableTimer.Interval = 200;  // 5 ticks per secong

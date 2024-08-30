@@ -12,28 +12,27 @@ namespace WinForms_Sudoku
         /// <summary>
         /// OwnerGrid is the visual sudoku grid, to which this status control belongs to.
         /// </summary>
-        public SudokuGrid OwnerGrid { get; set; }
+        public SudokuGrid? OwnerGrid { get; set; }
 
         // Following variables are used by the double-buffered drawing:
         private bool initializationComplete;
-        private bool isDisposing;
-        private BufferedGraphicsContext backbufferContext;
-        private BufferedGraphics backbufferGraphics;
-        private Graphics drawingGraphics;
+        private BufferedGraphicsContext? backbufferContext;
+        private BufferedGraphics? backbufferGraphics;
+        private Graphics? drawingGraphics;
 
         /// <summary>
         /// The status display is updated on a timer, mainly for the game time label to update all the time
         /// </summary>
-        private System.Windows.Forms.Timer StatusUpdateTimer;
+        private System.Windows.Forms.Timer? StatusUpdateTimer;
 
         /// <summary>
         /// Border pen for light color; light and dark color used to make the main game board seem slightly 3D-ish.
         /// </summary>
-        Pen borderPen_Light = new Pen(Color.LightGray, 1);
+        Pen BorderPen_Light = new Pen(Color.LightGray, 1);
         /// <summary>
         /// Border pen for dark color; light and dark color used to make the main game board seem slightly 3D-ish.
         /// </summary>
-        Pen borderPen_Dark = new Pen(Color.DarkGray, 1);
+        Pen BorderPen_Dark = new Pen(Color.DarkGray, 1);
 
         Font NumberFont = new Font("Tahoma", 9);
         Font SelectedNumberFont = new Font("Tahoma", 9, FontStyle.Bold);
@@ -45,7 +44,7 @@ namespace WinForms_Sudoku
         /// <summary>
         /// Highlight the selected number (full row) in the display by setting background color to similar to selected cell
         /// </summary>
-        Brush _selectedNumberBackgroundBrush = new SolidBrush(Color.FromArgb(200, 225, 255));
+        Brush SelectedNumberBackgroundBrush = new SolidBrush(Color.FromArgb(200, 225, 255));
 
         StringFormat NumberFormat = new StringFormat();
         Brush TotalBrush = new SolidBrush(Color.Black);
@@ -100,7 +99,7 @@ namespace WinForms_Sudoku
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void StatusUpdateTimer_Tick(object sender, EventArgs e)
+        private void StatusUpdateTimer_Tick(object? sender, EventArgs e)
         {
             UpdateStatusLabels();
         }
@@ -112,7 +111,10 @@ namespace WinForms_Sudoku
         {
             // Check initialization has completed so we know backbufferContext has been assigned.
             // Check that we aren't disposing or this could be invalid.
-            if (!initializationComplete || isDisposing)
+            if (!initializationComplete)
+                return;
+
+            if (backbufferContext == null)
                 return;
 
             // We recreate the buffer with a width and height of the control. The "+ 1" 
@@ -152,28 +154,11 @@ namespace WinForms_Sudoku
         }
 
 
-        //protected override void Dispose(bool disposing)
-        //{
-        //    isDisposing = true;
-        //    if (disposing)
-        //    {
-        //        if (components != null)
-        //            components.Dispose();
-
-        //        // We must dispose of backbufferGraphics before we dispose of backbufferContext or we will get an exception.
-        //        if (backbufferContext != null)
-        //            backbufferContext.Dispose();
-        //        if (backbufferGraphics != null)
-        //            backbufferGraphics.Dispose();
-        //    }
-        //    base.Dispose(disposing);
-        //}
-
         protected override void OnPaint(PaintEventArgs e)
         {
             // If we've initialized the backbuffer properly, render it on the control. 
             // Otherwise, do just the standard control paint.
-            if (!isDisposing && backbufferGraphics != null)
+            if (backbufferGraphics != null)
                 backbufferGraphics.Render(e.Graphics);
         }
         #endregion
@@ -185,7 +170,7 @@ namespace WinForms_Sudoku
         {
             if (drawingGraphics == null)
                 return;
-            if ((Disposing) || (isDisposing))
+            if (Disposing)
                 return;
             if (OwnerGrid == null)
                 return;  // Nothing to draw
@@ -200,10 +185,10 @@ namespace WinForms_Sudoku
             drawingGraphics.FillRectangle(Brushes.White, BackGround);
 
             // Borders:
-            drawingGraphics.DrawLine(borderPen_Dark, 0, TopPadding, Width - 1, TopPadding);            // Top left - top right
-            drawingGraphics.DrawLine(borderPen_Light, Width - 1, TopPadding, Width - 1, Height - 1);   // top right - bottom right
-            drawingGraphics.DrawLine(borderPen_Dark, 0, Height - 1, 0, TopPadding);                    // bottom left - top left
-            drawingGraphics.DrawLine(borderPen_Light, 0, Height - 1, Width - 1, Height - 1);           // bottom left - bottom right
+            drawingGraphics.DrawLine(BorderPen_Dark, 0, TopPadding, Width - 1, TopPadding);            // Top left - top right
+            drawingGraphics.DrawLine(BorderPen_Light, Width - 1, TopPadding, Width - 1, Height - 1);   // top right - bottom right
+            drawingGraphics.DrawLine(BorderPen_Dark, 0, Height - 1, 0, TopPadding);                    // bottom left - top left
+            drawingGraphics.DrawLine(BorderPen_Light, 0, Height - 1, Width - 1, Height - 1);           // bottom left - bottom right
 
             DrawValues(OwnerGrid.GetSolvedValues());
 
@@ -259,10 +244,14 @@ namespace WinForms_Sudoku
         /// <param name="Cell"></param>
         private void DrawSingleNumberSolved(int Number, int SolvedCount, Rectangle Cell)
         {
+            if (OwnerGrid == null || drawingGraphics == null)
+                return;
+                
+            
             // Draw the number at the left of the row:
             if (OwnerGrid.LastSelectedValue == Number)
             {
-                drawingGraphics.FillRectangle(_selectedNumberBackgroundBrush, Cell);
+                drawingGraphics.FillRectangle(SelectedNumberBackgroundBrush, Cell);
                 drawingGraphics.DrawString(Number.ToString() + " :", SelectedNumberFont, TotalBrush, 4, Cell.Top);
             }
             else

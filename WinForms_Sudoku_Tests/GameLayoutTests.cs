@@ -10,6 +10,8 @@ namespace WinForms_Sudoku.Tests
     [TestClass()]
     public class GameLayoutsTests
     {
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+
         #region Overall tests to quickly validate predefined data
 
         /// <summary>
@@ -279,5 +281,7 @@ namespace WinForms_Sudoku.Tests
         }
 
         #endregion
+
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
     }
 }
