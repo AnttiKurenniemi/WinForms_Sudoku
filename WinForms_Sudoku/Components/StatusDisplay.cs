@@ -240,37 +240,38 @@ namespace WinForms_Sudoku
         {
             if (OwnerGrid == null || DrawingGraphics == null)
                 return;
-                
+
+            int cellTopPadding = 3;
             
             // Draw the number at the left of the row:
             if (OwnerGrid.LastSelectedValue == Number)
             {
                 DrawingGraphics.FillRectangle(SelectedNumberBackgroundBrush, Cell);
-                DrawingGraphics.DrawString(Number.ToString() + " : ", SelectedNumberFont, TotalBrush, 4, Cell.Top);
+                DrawingGraphics.DrawString(Number.ToString() + " : ", SelectedNumberFont, TotalBrush, 4, Cell.Top + cellTopPadding);
             }
             else
-                DrawingGraphics.DrawString(Number.ToString() + " : ", NumberFont, TotalBrush, 4, Cell.Top);
+                DrawingGraphics.DrawString(Number.ToString() + " : ", NumberFont, TotalBrush, 4, Cell.Top + cellTopPadding);
 
             // Then a mark for each solved or not solved cell
             for (int i = 1; i < 10; i++)
             {
-                int left = Cell.Left + (i * 14) + 18;
+                int left = Cell.Left + (i * 18) + 18;
 
                 if (i > SolvedCount)
                 {
                     // Unsolved number - draw a red question mark
                     if (OwnerGrid.LastSelectedValue == Number)
-                        DrawingGraphics.DrawString("?", SelectedNumberFont, NumberFontBrush, left, Cell.Top);
+                        DrawingGraphics.DrawString("?", SelectedNumberFont, NumberFontBrush, left, Cell.Top + cellTopPadding);
                     else
-                        DrawingGraphics.DrawString("?", NumberFont, NumberFontBrush, left, Cell.Top);
+                        DrawingGraphics.DrawString("?", NumberFont, NumberFontBrush, left, Cell.Top + cellTopPadding);
                 }
                 else
                 {
                     // Solved number - draw a green, X 
                     if (OwnerGrid.LastSelectedValue == Number)
-                        DrawingGraphics.DrawString("X", SelectedSolvedNumberFont, SolvedNumberFontBrush, left, Cell.Top);
+                        DrawingGraphics.DrawString("X", SelectedSolvedNumberFont, SolvedNumberFontBrush, left, Cell.Top + cellTopPadding);
                     else
-                        DrawingGraphics.DrawString("X", SolvedNumberFont, SolvedNumberFontBrush, left, Cell.Top);
+                        DrawingGraphics.DrawString("X", SolvedNumberFont, SolvedNumberFontBrush, left, Cell.Top + cellTopPadding);
                 }
             }
         }
