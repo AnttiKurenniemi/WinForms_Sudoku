@@ -246,15 +246,15 @@ namespace WinForms_Sudoku
             if (OwnerGrid.LastSelectedValue == Number)
             {
                 DrawingGraphics.FillRectangle(SelectedNumberBackgroundBrush, Cell);
-                DrawingGraphics.DrawString(Number.ToString() + " :", SelectedNumberFont, TotalBrush, 4, Cell.Top);
+                DrawingGraphics.DrawString(Number.ToString() + " : ", SelectedNumberFont, TotalBrush, 4, Cell.Top);
             }
             else
-                DrawingGraphics.DrawString(Number.ToString() + " :", NumberFont, TotalBrush, 4, Cell.Top);
+                DrawingGraphics.DrawString(Number.ToString() + " : ", NumberFont, TotalBrush, 4, Cell.Top);
 
             // Then a mark for each solved or not solved cell
             for (int i = 1; i < 10; i++)
             {
-                int left = Cell.Left + (i * 14) + 10;
+                int left = Cell.Left + (i * 14) + 18;
 
                 if (i > SolvedCount)
                 {
