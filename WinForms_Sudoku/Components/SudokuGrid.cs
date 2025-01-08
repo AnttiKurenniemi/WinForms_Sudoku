@@ -7,6 +7,10 @@ using System.Windows.Forms;
 
 namespace WinForms_Sudoku
 {
+    /// <summary>
+    /// Main grid component. Draws a 9x9 grid in which the game is played, and the numbers with
+    /// specific colors for different states (solved / not solved etc)
+    /// </summary>
     public partial class SudokuGrid : UserControl
     {
         /// <summary>
@@ -161,7 +165,7 @@ namespace WinForms_Sudoku
         }
 
 
-            #region Double-buffered drawing methods
+        #region Double-buffered drawing methods
 
         private void RecreateBuffers()
         {
@@ -170,7 +174,7 @@ namespace WinForms_Sudoku
             if (!InitializationComplete)
                 return;
 
-            // We recreate the buffer with a width and height of the control. The "+ 1" 
+            // Recreate the buffer with a width and height of the control. The "+ 1" 
             // guarantees we never have a buffer with a width or height of 0. 
             BackbufferContext.MaximumBuffer = new Size(this.Width + 1, this.Height + 1);
 

@@ -4,6 +4,12 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace WinForms_Sudoku
 {
+    /// <summary>
+    /// StatusDisplay is a panel showing a bunch of information on the game; time spend, count of 
+    /// moves, solved numbers etc. It is a UserControl which draws itself. 
+    /// The main connection to the actual game is through the grid component, SudokuGrid OwnerGrid.
+    /// This component reads data through the owner grid.
+    /// </summary>
     public partial class StatusDisplay : UserControl
     {
         #region Variable declarations

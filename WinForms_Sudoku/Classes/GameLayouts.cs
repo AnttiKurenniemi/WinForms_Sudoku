@@ -361,7 +361,8 @@ namespace WinForms_Sudoku
         /// <summary>
         /// When the first row is filled by all values 1 to 9, the rest of the rows can be 
         /// filled in by shifting the values from one row to another. This is a separate method
-        /// to enable testing the result
+        /// to enable testing the result.
+        /// Note: this is NOT a random shifting method, as the shifting values are hard-coded!
         /// </summary>
         /// <param name="Board"></param>
         public void FillBoardWithShiftedRows(GameData Board)

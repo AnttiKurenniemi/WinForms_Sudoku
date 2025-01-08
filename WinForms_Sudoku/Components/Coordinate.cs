@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace WinForms_Sudoku
 {
+    /// <summary>
+    /// Coordinate is a reference to a cell on the board.
+    /// </summary>
     public class Coordinate
     {
         public int X;
