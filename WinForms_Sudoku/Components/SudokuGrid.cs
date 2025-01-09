@@ -35,6 +35,17 @@ namespace WinForms_Sudoku
             }
         }
 
+        public bool InProgress 
+        {  
+            get 
+            {
+                if (Board != null)
+                    return Board.InProgress;
+                else
+                    return false;
+            } 
+        }
+
         private GridDimensions Dimensions = new GridDimensions();
 
         /// <summary>
@@ -70,13 +81,13 @@ namespace WinForms_Sudoku
         private readonly StringFormat NumberFormat = new StringFormat();
 
         // Colors for drawing numbers in different colors:
-        private readonly Brush NumberBrush = new SolidBrush(Color.Black);
-        private readonly Brush ErrorNumberBrush = new SolidBrush(Color.Red);
-        private readonly Brush FixedNumberBrush = new SolidBrush(Color.DimGray);
-        private readonly Brush SolvedNumberBrush = new SolidBrush(Color.DarkGreen);
-        private readonly Brush SameAsSelectedBrush = new SolidBrush(Color.Blue);
-        private readonly Brush HintCellBrush = new SolidBrush(Color.Green);
-        private readonly Brush SelectedCellBrush = new SolidBrush(Color.LightSkyBlue);
+        private readonly Brush NumberBrush = new SolidBrush(Color.Black);                /// <summary>Regular number placed by player</summary>
+        private readonly Brush ErrorNumberBrush = new SolidBrush(Color.Red);             /// <summary>Incorrectly placed number</summary>
+        private readonly Brush FixedNumberBrush = new SolidBrush(Color.DimGray);         /// <summary>Number placed initially when starting a game</summary>
+        private readonly Brush SolvedNumberBrush = new SolidBrush(Color.DarkGreen);      /// <summary>Number completely (all 9 instances) solved</summary>
+        private readonly Brush SameAsSelectedBrush = new SolidBrush(Color.Blue);         /// <summary>Highlighting numbers that are same as the one in the currently selected cell</summary>
+        private readonly Brush HintCellBrush = new SolidBrush(Color.LimeGreen);          /// <summary>Hint number</summary>
+        private readonly Brush SelectedCellBrush = new SolidBrush(Color.LightSkyBlue);   /// <summary>Currently selected cell</summary>
 
         // Fading "solvable" text related variables:
         private Font SolvableFont = new Font("Tahoma", 32);
@@ -86,11 +97,13 @@ namespace WinForms_Sudoku
         private Font SolvedFont = new Font("Tahoma", 32);
         private readonly Brush SolvedBrush = new SolidBrush(Color.Blue);
 
-        #endregion
-
         /// <summary>This font is used to show which numbers are still possible</summary>
         private Font PossibleValueFont = new Font("Tahoma", 8);
+        private readonly Brush PossibleValueBrush = new SolidBrush(Color.DimGray);
         public bool ShowPossibleValues = false;
+
+        #endregion
+
 
         // Following variables are used by the double-buffered drawing:
         private bool InitializationComplete;
@@ -502,7 +515,7 @@ namespace WinForms_Sudoku
                         (pieceY * Dimensions.HintBlockHeight) + rct.Top,
                         Dimensions.HintBlockWidth,
                         Dimensions.HintBlockHeight);
-                    DrawingGraphics.DrawString(i.ToString(), PossibleValueFont, NumberBrush, pieceRectangle, NumberFormat);
+                    DrawingGraphics.DrawString(i.ToString(), PossibleValueFont, PossibleValueBrush, pieceRectangle, NumberFormat);
                 }
 
                 // Advance x and y as needed:

@@ -89,6 +89,7 @@ namespace WinForms_Sudoku
             ReplaceNumbersOnBoard(Board);
 
             Board.RefreshAllPossibleValues();
+            Board.InProgress = true;
         }
 
         /// <summary>

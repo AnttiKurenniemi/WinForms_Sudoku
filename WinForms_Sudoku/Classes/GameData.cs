@@ -11,8 +11,6 @@ namespace WinForms_Sudoku
     /// </summary>
     public class GameData
     {
-        private Random RandomNumberGenerator;
-
         /// <summary>
         /// Actual array of the cells on the board
         /// </summary>
@@ -37,6 +35,13 @@ namespace WinForms_Sudoku
         /// </summary>
         public bool Modified = false;
 
+
+        /// <summary>
+        /// Is a game in progress or not. Used in the UI to disable attempting to solve a game that is 
+        /// not in progress (makes no sense)
+        /// </summary>
+        public bool InProgress = false;
+
         /// <summary>
         /// Flag to indicate that the game has been solved
         /// </summary>
@@ -54,8 +59,6 @@ namespace WinForms_Sudoku
         /// </summary>
         public GameData()
         {
-            RandomNumberGenerator = new Random();
-
             // Set up a grid of 9 x 9 cells
             for (int y = 0; y < 9; y++)
             {
@@ -126,6 +129,7 @@ namespace WinForms_Sudoku
             UndoList.Clear();
 
             Modified = false;
+            InProgress = false;
         }
 
 
@@ -181,6 +185,7 @@ namespace WinForms_Sudoku
             Layouts.SetSeededRandomLayout(this);
 
             RefreshAllPossibleValues();
+            InProgress = true;
         }
 
 

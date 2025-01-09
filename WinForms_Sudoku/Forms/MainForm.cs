@@ -67,13 +67,15 @@ namespace WinForms_Sudoku
 
         private void btnSolve_Click(object sender, EventArgs e)
         {
-            if (!MainGrid.SolveAll())
-                MessageBox.Show("Can't solve using simple logic, sorry.");
+            if (MainGrid.InProgress)
+                if (!MainGrid.SolveAll())
+                    MessageBox.Show("Can't solve using simple logic, sorry.");
         }
 
         private void btnCheckIfSolvable_Click(object sender, EventArgs e)
         {
-            MainGrid.CheckIfSolvable();
+            if (MainGrid.InProgress)
+                MainGrid.CheckIfSolvable();
         }
 
         private void cbCheckPossibleValues_CheckedChanged(object sender, EventArgs e)
