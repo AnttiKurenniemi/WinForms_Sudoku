@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             MainGrid = new SudokuGrid();
             MainStatusDisplay = new StatusDisplay();
             btnFileMenu = new FocuslessButton();
@@ -245,6 +246,7 @@
             Controls.Add(btnFileMenu);
             Controls.Add(MainStatusDisplay);
             Controls.Add(MainGrid);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "MainForm";
             Text = "Sudoku";
             FormClosing += MainForm_FormClosing;

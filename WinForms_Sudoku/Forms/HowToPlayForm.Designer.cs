@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HowToPlayForm));
             browser = new WebBrowser();
             btnCloseHelp = new Button();
             SuspendLayout();
@@ -63,6 +64,7 @@
             ClientSize = new Size(1083, 768);
             Controls.Add(btnCloseHelp);
             Controls.Add(browser);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "HowToPlayForm";
             Text = "How To Play";
             Shown += HowToPlayForm_Shown;
