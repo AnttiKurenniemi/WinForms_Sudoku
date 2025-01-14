@@ -66,10 +66,10 @@
             // MainStatusDisplay
             // 
             MainStatusDisplay.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            MainStatusDisplay.Location = new Point(753, 410);
+            MainStatusDisplay.Location = new Point(753, 448);
             MainStatusDisplay.Name = "MainStatusDisplay";
             MainStatusDisplay.OwnerGrid = MainGrid;
-            MainStatusDisplay.Size = new Size(219, 337);
+            MainStatusDisplay.Size = new Size(219, 302);
             MainStatusDisplay.TabIndex = 1;
             // 
             // btnFileMenu
@@ -167,7 +167,7 @@
             // 
             cbShowPossibleValues.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             cbShowPossibleValues.AutoSize = true;
-            cbShowPossibleValues.Location = new Point(757, 382);
+            cbShowPossibleValues.Location = new Point(757, 388);
             cbShowPossibleValues.Name = "cbShowPossibleValues";
             cbShowPossibleValues.Size = new Size(207, 29);
             cbShowPossibleValues.TabIndex = 9;

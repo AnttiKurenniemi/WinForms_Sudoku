@@ -9,11 +9,23 @@ namespace WinForms_Sudoku
 
         #region Form events
 
+        /// <summary>
+        /// Closing the main form (closing the application). Check if there is an unmodified
+        /// game, and if there is ask to save it first.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             e.Cancel = !MainGrid.CheckForModified();
         }
 
+        /// <summary>
+        /// On the first time the app is opened, show the help page. Update a property
+        /// to remember that the help page has been shown.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MainForm_Shown(object sender, EventArgs e)
         {
             if ((bool)Properties.Settings.Default["HowToPlayShown"] == false)
@@ -32,6 +44,12 @@ namespace WinForms_Sudoku
 
 
         #region Buttons on main form
+
+        /// <summary>
+        /// Open the "File" menu with save and load related items.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnFileMenu_Click(object sender, EventArgs e)
         {
             FileMenu.Show(btnFileMenu, new Point(0, btnFileMenu.Height));
@@ -71,7 +89,6 @@ namespace WinForms_Sudoku
                 if (!MainGrid.SolveAll())
                     MessageBox.Show("Can't solve using simple logic, sorry.");
         }
-
 
         private void btnHelp_Click(object sender, EventArgs e)
         {
