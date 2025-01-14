@@ -72,6 +72,13 @@ namespace WinForms_Sudoku
                     MessageBox.Show("Can't solve using simple logic, sorry.");
         }
 
+
+        private void btnHelp_Click(object sender, EventArgs e)
+        {
+            HowToPlayForm howToPlay = new HowToPlayForm();
+            howToPlay.Show();
+        }
+
         private void btnCheckIfSolvable_Click(object sender, EventArgs e)
         {
             if (MainGrid.InProgress)

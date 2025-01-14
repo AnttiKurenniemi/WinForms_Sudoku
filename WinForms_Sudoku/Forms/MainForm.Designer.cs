@@ -49,6 +49,7 @@
             menuItemHelp = new ToolStripMenuItem();
             toolStripSeparator3 = new ToolStripSeparator();
             menuItemExit = new ToolStripMenuItem();
+            btnHelp = new FocuslessButton();
             FileMenu.SuspendLayout();
             SuspendLayout();
             // 
@@ -87,7 +88,7 @@
             // btnSetRandomPreset
             // 
             btnSetRandomPreset.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnSetRandomPreset.Location = new Point(753, 64);
+            btnSetRandomPreset.Location = new Point(753, 58);
             btnSetRandomPreset.Name = "btnSetRandomPreset";
             btnSetRandomPreset.Size = new Size(219, 46);
             btnSetRandomPreset.TabIndex = 3;
@@ -100,7 +101,7 @@
             // btnSetRandomLayout
             // 
             btnSetRandomLayout.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnSetRandomLayout.Location = new Point(753, 115);
+            btnSetRandomLayout.Location = new Point(753, 104);
             btnSetRandomLayout.Name = "btnSetRandomLayout";
             btnSetRandomLayout.Size = new Size(219, 46);
             btnSetRandomLayout.TabIndex = 4;
@@ -113,7 +114,7 @@
             // btnHint
             // 
             btnHint.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnHint.Location = new Point(753, 167);
+            btnHint.Location = new Point(753, 150);
             btnHint.Name = "btnHint";
             btnHint.Size = new Size(219, 46);
             btnHint.TabIndex = 5;
@@ -126,7 +127,7 @@
             // btnUndo
             // 
             btnUndo.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnUndo.Location = new Point(753, 219);
+            btnUndo.Location = new Point(753, 196);
             btnUndo.Name = "btnUndo";
             btnUndo.Size = new Size(219, 46);
             btnUndo.TabIndex = 6;
@@ -139,7 +140,7 @@
             // btnSolve
             // 
             btnSolve.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnSolve.Location = new Point(753, 271);
+            btnSolve.Location = new Point(753, 242);
             btnSolve.Name = "btnSolve";
             btnSolve.Size = new Size(219, 46);
             btnSolve.TabIndex = 7;
@@ -152,7 +153,7 @@
             // btnCheckIfSolvable
             // 
             btnCheckIfSolvable.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnCheckIfSolvable.Location = new Point(753, 323);
+            btnCheckIfSolvable.Location = new Point(753, 288);
             btnCheckIfSolvable.Name = "btnCheckIfSolvable";
             btnCheckIfSolvable.Size = new Size(219, 46);
             btnCheckIfSolvable.TabIndex = 8;
@@ -166,7 +167,7 @@
             // 
             cbShowPossibleValues.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             cbShowPossibleValues.AutoSize = true;
-            cbShowPossibleValues.Location = new Point(757, 375);
+            cbShowPossibleValues.Location = new Point(757, 382);
             cbShowPossibleValues.Name = "cbShowPossibleValues";
             cbShowPossibleValues.Size = new Size(207, 29);
             cbShowPossibleValues.TabIndex = 9;
@@ -231,11 +232,25 @@
             menuItemExit.Text = "Exit game";
             menuItemExit.Click += menuItemExit_Click;
             // 
+            // btnHelp
+            // 
+            btnHelp.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnHelp.Location = new Point(753, 334);
+            btnHelp.Name = "btnHelp";
+            btnHelp.Size = new Size(219, 46);
+            btnHelp.TabIndex = 10;
+            btnHelp.TabStop = false;
+            btnHelp.Text = "Show help";
+            btnHelp.TooltipText = "";
+            btnHelp.UseVisualStyleBackColor = true;
+            btnHelp.Click += btnHelp_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(984, 760);
+            Controls.Add(btnHelp);
             Controls.Add(cbShowPossibleValues);
             Controls.Add(btnCheckIfSolvable);
             Controls.Add(btnSolve);
@@ -277,5 +292,6 @@
         private ToolStripMenuItem menuItemHelp;
         private ToolStripSeparator toolStripSeparator3;
         private ToolStripMenuItem menuItemExit;
+        private FocuslessButton btnHelp;
     }
 }
