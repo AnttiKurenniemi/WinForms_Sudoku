@@ -556,6 +556,8 @@ namespace WinForms_Sudoku
 
             GameLayouts layouts = new GameLayouts();
             layouts.SetRandomLayout(Board);
+            SelectedCell.X = -1;
+            SelectedCell.Y = -1;
 
             Redraw();
         }
@@ -567,7 +569,11 @@ namespace WinForms_Sudoku
         public void RandomizeNew()
         {
             Clear();
+
             Board.RandomizeNew();
+            SelectedCell.X = -1;
+            SelectedCell.Y = -1;
+
             Redraw();
         }
 
